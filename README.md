@@ -59,6 +59,7 @@ pip install -r requirements.txt
 ## 运行方式
 
 ```powershell
+cd D:\python_data_learning\projects\campus_service_project
 D:\python_data_learning\.venv\Scripts\python.exe .\src\campus_service_analysis.py
 ```
 
