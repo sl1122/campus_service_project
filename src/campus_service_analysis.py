@@ -16,6 +16,7 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 TABLE_DIR = OUTPUT_DIR / "tables"
 GEOJSON_DIR = OUTPUT_DIR / "geojson"
@@ -29,7 +30,7 @@ PROJECTED_CRS = "EPSG:3857"
 
 def ensure_output_dirs() -> None:
     """创建标准输出目录。"""
-    for path in [TABLE_DIR, GEOJSON_DIR, FIGURE_DIR, REPORT_DIR, DOCS_DIR]:
+    for path in [DATA_DIR, TABLE_DIR, GEOJSON_DIR, FIGURE_DIR, REPORT_DIR, DOCS_DIR]:
         path.mkdir(parents=True, exist_ok=True)
 
 
@@ -115,105 +116,10 @@ def add_point_labels(ax, gdf: gpd.GeoDataFrame, label_col: str, fontsize: int = 
 
 
 def build_mock_data() -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame, gpd.GeoDataFrame]:
-    """构建模拟校园生活点、模拟 POI 和模拟候选点数据。"""
-    life_df = pd.DataFrame(
-        {
-            "生活点名称": ["图书馆", "一号宿舍区", "二号宿舍区", "教学楼群", "东校门", "体育场"],
-            "生活点类型": ["学习", "居住", "居住", "教学", "出入口", "运动"],
-            "经度": [111.6900, 111.6865, 111.6935, 111.6910, 111.6960, 111.6880],
-            "纬度": [29.0550, 29.0565, 29.0525, 29.0570, 29.0555, 29.0515],
-        }
-    )
-
-    poi_df = pd.DataFrame(
-        {
-            "POI名称": [
-                "一食堂",
-                "二食堂",
-                "校外小吃街",
-                "校园超市",
-                "东门便利店",
-                "水果店",
-                "校医院",
-                "东门药店",
-                "东门公交站",
-                "南门公交站",
-                "菜鸟驿站",
-                "宿舍快递点",
-                "图文打印店",
-                "教学楼打印点",
-                "奶茶店A",
-                "奶茶店B",
-                "咖啡店",
-            ],
-            "POI类型": [
-                "食堂",
-                "食堂",
-                "餐饮",
-                "超市",
-                "超市",
-                "超市",
-                "医疗",
-                "医疗",
-                "公交站",
-                "公交站",
-                "快递点",
-                "快递点",
-                "打印店",
-                "打印店",
-                "饮品",
-                "饮品",
-                "饮品",
-            ],
-            "经度": [
-                111.6890,
-                111.6920,
-                111.6970,
-                111.6870,
-                111.6965,
-                111.6945,
-                111.6905,
-                111.6972,
-                111.6968,
-                111.6885,
-                111.6868,
-                111.6938,
-                111.6902,
-                111.6915,
-                111.6955,
-                111.6875,
-                111.6928,
-            ],
-            "纬度": [
-                29.0545,
-                29.0528,
-                29.0558,
-                29.0568,
-                29.0552,
-                29.0530,
-                29.0558,
-                29.0560,
-                29.0556,
-                29.0508,
-                29.0562,
-                29.0520,
-                29.0553,
-                29.0572,
-                29.0550,
-                29.0560,
-                29.0535,
-            ],
-        }
-    )
-
-    candidate_df = pd.DataFrame(
-        {
-            "候选点名称": ["图书馆候选点", "教学楼候选点", "宿舍区候选点", "东校门候选点", "体育场候选点"],
-            "候选点类型": ["学习服务", "教学服务", "生活服务", "出入口服务", "运动服务"],
-            "经度": [111.6903, 111.6912, 111.6870, 111.6962, 111.6882],
-            "纬度": [29.0552, 29.0571, 29.0563, 29.0554, 29.0518],
-        }
-    )
+    """从 data 目录读取模拟校园生活点、模拟 POI 和模拟候选点数据。"""
+    life_df = pd.read_csv(DATA_DIR / "life_points.csv", encoding="utf-8-sig")
+    poi_df = pd.read_csv(DATA_DIR / "poi_points.csv", encoding="utf-8-sig")
+    candidate_df = pd.read_csv(DATA_DIR / "candidate_points.csv", encoding="utf-8-sig")
 
     life_gdf = make_point_gdf(life_df)
     poi_gdf = make_point_gdf(poi_df)
@@ -654,6 +560,8 @@ def create_report(
 
 本项目数据全部为模拟数据。模拟校园生活点包括图书馆、宿舍区、教学楼群、东校门和体育场等；模拟 POI 包括食堂、餐饮、超市、医疗、公交站、快递点、打印店和饮品店等；模拟候选点用于演示新增自助打印点的优化选址。
 
+三类模拟数据已拆分保存到 `data/life_points.csv`、`data/poi_points.csv` 和 `data/candidate_points.csv`，脚本运行时从 CSV 读取并转换为 GeoDataFrame。
+
 所有点数据先以 EPSG:4326 经纬度坐标系构建，再统一转换为 EPSG:3857 米制投影坐标系。报告中的距离均为基于 EPSG:3857 的平面直线距离，不等同于真实步行距离或道路网络距离。
 
 ## 3. 研究方法
@@ -729,6 +637,12 @@ def create_readme(
 
 本项目使用模拟校园生活点、模拟 POI 和模拟候选点数据。所有距离、指数、短板识别和选址建议均用于方法训练和流程演示，不应被解释为真实校园设施规划结论。
 
+三类模拟数据已拆分保存到 `data/` 目录：
+
+- `life_points.csv`：模拟校园生活点
+- `poi_points.csv`：模拟 POI 点
+- `candidate_points.csv`：模拟新增服务设施候选点
+
 ## 项目功能
 
 - 构建模拟校园生活点、模拟 POI 和模拟候选点数据
@@ -756,6 +670,10 @@ campus_service_project/
 ├─ README.md
 ├─ requirements.txt
 ├─ .gitignore
+├─ data/
+│  ├─ life_points.csv
+│  ├─ poi_points.csv
+│  └─ candidate_points.csv
 ├─ src/
 │  └─ campus_service_analysis.py
 ├─ outputs/

@@ -8,6 +8,12 @@
 
 本项目使用模拟校园生活点、模拟 POI 和模拟候选点数据。所有距离、指数、短板识别和选址建议均用于方法训练和流程演示，不应被解释为真实校园设施规划结论。
 
+三类模拟数据已拆分保存到 `data/` 目录：
+
+- `life_points.csv`：模拟校园生活点
+- `poi_points.csv`：模拟 POI 点
+- `candidate_points.csv`：模拟新增服务设施候选点
+
 ## 项目功能
 
 - 构建模拟校园生活点、模拟 POI 和模拟候选点数据
@@ -35,6 +41,10 @@ campus_service_project/
 ├─ README.md
 ├─ requirements.txt
 ├─ .gitignore
+├─ data/
+│  ├─ life_points.csv
+│  ├─ poi_points.csv
+│  └─ candidate_points.csv
 ├─ src/
 │  └─ campus_service_analysis.py
 ├─ outputs/
